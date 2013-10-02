@@ -30,6 +30,7 @@ PRODUCT_PACKAGES += \
     Apollo \
     BlueBalls \
     BluetoothExt \
+    Calendar \
     Camera \
     CarbonFibers \
     Development \
