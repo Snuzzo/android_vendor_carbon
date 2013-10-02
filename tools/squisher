@@ -121,6 +121,7 @@ printf "No changelog..."
 echo
 fi
 
+cp -r $ANDROID_BUILD_TOP/vendor/carbon/proprietary/apk/* $REPACK/ota/system/app
 # Pack it up and sign
 printf "Zipping package..."
 ( cd $REPACK/ota; zip $QUIET -r $REPACK/update.zip . )

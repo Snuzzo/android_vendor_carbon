@@ -62,15 +62,18 @@ PRODUCT_PROPERTY_OVERRIDES += \
 # main packages
 PRODUCT_PACKAGES += \
     BluetoothExt \
+    Calendar \
     Camera \
     Development \
     CMFileManager \
     Galaxy4 \
+    GooManager \
     LatinIME \
     LiveWallpapers \
     LiveWallpapersPicker \
     LockClock \
     NoiseField \
+    NovaLauncher \
     PhaseBeam \
     PhotoTable \
     Superuser \
