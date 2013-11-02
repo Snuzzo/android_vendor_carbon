@@ -45,6 +45,30 @@ printf "Unpacking $OTAPACKAGE..."
 unzip $QUIET $OTAPACKAGE
 echo
 
+# Add Aroma
+printf "Unpacking Aroma..."
+AROMADATE=$(date +"%Y-%m-%d")
+mv $REPACK/ota/META-INF/com/google/android/update-binary $REPACK/ota/META-INF/com/google/android/update-binary-installer
+unzip $QUIET -o $ANDROID_BUILD_TOP/vendor/carbon/tools/aroma/aroma.zip
+cp $ANDROID_BUILD_TOP/vendor/carbon/tools/aroma/aroma-config $REPACK/ota/META-INF/com/google/android/aroma-config
+cp $ANDROID_BUILD_TOP/vendor/carbon/tools/aroma/aroma-script $REPACK/ota/META-INF/com/google/android/aroma-script
+cd $REPACK/ota/META-INF/com/google/android/
+wget -O ./aroma/changelog.html https://docs.google.com/document/d/1Zcp6iVWVw_7iH-ErnKgkYy3r5QuqV8PHFoQMb8hoBwQ/mobilebasic 2> /dev/null
+html2text -o ./aroma/changelog.txt ./aroma/changelog.html
+perl -i -pe '$_=""if 1..5' ./aroma/changelog.txt
+rm ./aroma/changelog.html
+awk '/# @AROMASCRIPT@/{system("cat aroma-script");next}1' $REPACK/ota/META-INF/com/google/android/updater-script > $REPACK/ota/META-INF/com/google/android/temp
+rm $REPACK/ota/META-INF/com/google/android/updater-script
+mv $REPACK/ota/META-INF/com/google/android/temp $REPACK/ota/META-INF/com/google/android/updater-script
+rm $REPACK/ota/META-INF/com/google/android/aroma-script
+AROMA_MODEL=`sed -n -e'/ro\.product\.model/s/^.*=//p' $OUT/system/build.prop`
+AROMA_MANUFACTURER=`sed -n -e'/ro\.product\.manufacturer/s/^.*=//p' $OUT/system/build.prop`
+AROMA_DEVICE="$AROMA_MANUFACTURER $AROMA_MODEL"
+sed -i -e "s|@AROMA_DEVICE@|$AROMA_DEVICE|" $REPACK/ota/META-INF/com/google/android/aroma-config
+sed -i -e "s|@DATE@|$AROMADATE|" $REPACK/ota/META-INF/com/google/android/aroma-config
+echo
+
+
 # Move all apks to the same directory so xargs can
 # use also with framework-res.apk. This allow process
 # framework-res.apk in parallel with other apks
@@ -67,9 +91,9 @@ rm -rf $REPACK/parallel
 
 # Fix build.prop
 $SED -i \
-	-e '/ro\.kernel\.android\.checkjni/d' \
-	-e '/ro\.build\.type/s/eng/user/' \
-	$REPACK/ota/system/build.prop
+        -e '/ro\.kernel\.android\.checkjni/d' \
+        -e '/ro\.build\.type/s/eng/user/' \
+        $REPACK/ota/system/build.prop
 
 # Determine what to name the new signed package
 MODVERSION=`sed -n -e'/ro\.carbon\.version/s/^.*=//p' $OUT/system/build.prop`
@@ -110,7 +134,7 @@ rm -rf $REPACK/ota/system/etc/recovery-resource.dat
 
 # Strip modules
 [ -d $REPACK/ota/system/lib/modules ] && \
-	find $REPACK/ota/system/lib/modules -name "*.ko" -print0 | xargs -0 arm-eabi-strip --strip-unneeded
+        find $REPACK/ota/system/lib/modules -name "*.ko" -print0 | xargs -0 arm-eabi-strip --strip-unneeded
 
 if [ "$CARBON_CHANGELOG" = true ]
 then
@@ -121,6 +145,7 @@ printf "No changelog..."
 echo
 fi
 
+
 # Pack it up and sign
 printf "Zipping package..."
 ( cd $REPACK/ota; zip $QUIET -r $REPACK/update.zip . )
@@ -128,9 +153,9 @@ echo
 printf "Signing package..."
 SECURITYDIR=$ANDROID_BUILD_TOP/build/target/product/security
 java -Xmx1024m \
-	-jar $OUT/../../../host/$OUT_TARGET_HOST/framework/signapk.jar \
-	-w $SECURITYDIR/testkey.x509.pem $SECURITYDIR/testkey.pk8 \
-	$REPACK/update.zip $OUTFILE
+        -jar $OUT/../../../host/$OUT_TARGET_HOST/framework/signapk.jar \
+        -w $SECURITYDIR/testkey.x509.pem $SECURITYDIR/testkey.pk8 \
+        $REPACK/update.zip $OUTFILE
 echo
 printf "Cleaning up..."
 rm -rf $REPACK
