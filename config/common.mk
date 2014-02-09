@@ -69,6 +69,7 @@ PRODUCT_PACKAGES += \
     Galaxy4 \
     GooManager \
     LatinIME \
+    Launcher2 \
     LiveWallpapers \
     LiveWallpapersPicker \
     LockClock \
@@ -79,6 +80,7 @@ PRODUCT_PACKAGES += \
     Superuser \
     su \
     Torch \
+    Trebuchet \
     VoicePlus \
     libemoji
 
