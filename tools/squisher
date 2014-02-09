@@ -46,6 +46,8 @@ unzip $QUIET $OTAPACKAGE
 echo
 
 # Add Aroma
+if [ "$CARBON_BUILDTYPE" = Aroma ]
+then
 printf "Unpacking Aroma..."
 AROMADATE=$(date +"%Y-%m-%d")
 mv $REPACK/ota/META-INF/com/google/android/update-binary $REPACK/ota/META-INF/com/google/android/update-binary-installer
@@ -67,6 +69,7 @@ AROMA_DEVICE="$AROMA_MANUFACTURER $AROMA_MODEL"
 sed -i -e "s|@AROMA_DEVICE@|$AROMA_DEVICE|" $REPACK/ota/META-INF/com/google/android/aroma-config
 sed -i -e "s|@DATE@|$AROMADATE|" $REPACK/ota/META-INF/com/google/android/aroma-config
 echo
+fi
 
 
 # Move all apks to the same directory so xargs can

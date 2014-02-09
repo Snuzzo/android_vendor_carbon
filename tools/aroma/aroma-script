@@ -29,9 +29,9 @@ endif;
 if
 file_getprop("/tmp/aroma/systemapk.prop","item.1.5") != "1"
 then
-delete("/system/app/CMFileManager.apk");
+delete("/system/app/DeskClock.apk");
 else
-ui_print("@	Installing CM File Manager");
+ui_print("@	Installing Desk Clock");
 endif;
 if
 file_getprop("/tmp/aroma/systemapk.prop","item.1.6") != "1"
@@ -50,17 +50,55 @@ endif;
 if
 file_getprop("/tmp/aroma/systemapk.prop","item.1.8") != "1"
 then
-delete("/system/app/HALO.apk");
-else
-ui_print("@	Installing Halo)))");
-endif;
-if
-file_getprop("/tmp/aroma/systemapk.prop","item.1.9") != "1"
-then
 delete("/system/app/LiveWallpapers.apk");
 delete("/system/app/NoiseField.apk");
 delete("/system/app/PhaseBeam.apk");
 delete("/system/app/BlueBalls.apk");
 else
 ui_print("@	Installing Live Wallpapers");
+endif;
+if
+file_getprop("/tmp/aroma/systemapk.prop","item.1.9") != "1"
+then
+delete("/system/app/CMFileManager.apk");
+else
+ui_print("@	Installing File Manager");
+endif;
+
+if
+file_getprop("/tmp/aroma/launcher.prop","selected") == "1"
+then
+ui_print("@	Installing Launcher2");
+delete("/system/app/Launcher3");
+delete("/system/app/Trebuchet.apk");
+endif;
+if
+file_getprop("/tmp/aroma/launcher.prop","selected") == "2"
+then
+ui_print("@	Installing Launcher3");
+delete("/system/app/Launcher2");
+delete("/system/app/Trebuchet.apk");
+endif;
+if
+file_getprop("/tmp/aroma/launcher.prop","selected") == "3"
+then
+ui_print("@	Installing Trebuchet");
+delete("/system/app/Launcher2");
+delete("/system/app/Launcher3");
+
+endif;
+
+package_extract_dir("usb","/tmp");
+if
+file_getprop("/tmp/aroma/usb.prop","selected") == "1"
+then
+set_perm(0, 0, 0777, "/tmp/ums.sh");
+run_program("/tmp/ums.sh");
+endif;
+
+if
+file_getprop("/tmp/aroma/usb.prop","selected") == "2"
+then
+set_perm(0, 0, 0777, "/tmp/mtp.sh");
+run_program("/tmp/mtp.sh");
 endif;
